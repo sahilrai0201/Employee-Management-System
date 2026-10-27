@@ -1,0 +1,8 @@
+[
+  { "DepartmentID": "ENG", "DepartmentName": "Engineering", "Head": "Alexander Wright", "CostCenter": "CC-1010" },
+  { "DepartmentID": "HR", "DepartmentName": "Human Resources", "Head": "Elena Rostova", "CostCenter": "CC-2020" },
+  { "DepartmentID": "FIN", "DepartmentName": "Finance", "Head": "David Kowalski", "CostCenter": "CC-3030" },
+  { "DepartmentID": "MKT", "DepartmentName": "Marketing", "Head": "Elena Rostova", "CostCenter": "CC-4040" },
+  { "DepartmentID": "OPS", "DepartmentName": "Operations", "Head": "Kenji Takahashi", "CostCenter": "CC-5050" },
+  { "DepartmentID": "SAL", "DepartmentName": "Sales", "Head": "Thomas Mueller", "CostCenter": "CC-6060" }
+]

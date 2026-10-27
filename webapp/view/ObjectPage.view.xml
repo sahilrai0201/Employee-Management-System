@@ -1,0 +1,301 @@
+<mvc:View
+  controllerName="corp.ems.employee.controller.ObjectPage"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:uxap="sap.uxap"
+  xmlns:layout="sap.ui.layout"
+  xmlns:form="sap.ui.layout.form"
+  xmlns:core="sap.ui.core"
+  height="100%">
+
+  <uxap:ObjectPageLayout
+    id="employeeObjectPage"
+    showTitleInHeaderContent="true"
+    alwaysShowContentHeader="false"
+    preserveHeaderStateOnScroll="false"
+    headerContentPinnable="true"
+    isChildPage="true"
+    showFooter="{appView>/isEditMode}">
+
+    <!-- Dynamic Header Title -->
+    <uxap:headerTitle>
+      <uxap:ObjectPageDynamicHeaderTitle>
+        <uxap:breadcrumbs>
+          <Breadcrumbs currentLocationText="{detailModel>/FullName}">
+            <Link text="Employees" press=".onNavBack"/>
+          </Breadcrumbs>
+        </uxap:breadcrumbs>
+
+        <uxap:expandedHeading>
+          <HBox alignItems="Center">
+            <Title text="{detailModel>/FullName}" level="H2" class="sapUiTinyMarginEnd"/>
+            <ObjectMarker type="Favorite" class="sapUiTinyMarginEnd"/>
+          </HBox>
+        </uxap:expandedHeading>
+
+        <uxap:snappedHeading>
+          <HBox alignItems="Center">
+            <Title text="{detailModel>/FullName}" level="H3"/>
+          </HBox>
+        </uxap:snappedHeading>
+
+        <uxap:expandedContent>
+          <Text text="{detailModel>/JobTitle} • {detailModel>/Department}"/>
+        </uxap:expandedContent>
+
+        <uxap:snappedContent>
+          <Text text="{detailModel>/JobTitle}"/>
+        </uxap:snappedContent>
+
+        <!-- Actions -->
+        <uxap:actions>
+          <Button
+            id="btnEditObject"
+            text="{i18n>btnEdit}"
+            type="Emphasized"
+            icon="sap-icon://edit"
+            visible="{= !${appView>/isEditMode} }"
+            press=".onEditPress"/>
+          <Button
+            id="btnDeleteObject"
+            text="{i18n>btnDelete}"
+            type="Reject"
+            icon="sap-icon://delete"
+            visible="{= !${appView>/isEditMode} }"
+            press=".onDeletePress"/>
+        </uxap:actions>
+      </uxap:ObjectPageDynamicHeaderTitle>
+    </uxap:headerTitle>
+
+    <!-- Header Content / Facets -->
+    <uxap:headerContent>
+      <layout:HorizontalLayout allowWrapping="true">
+        <VBox class="sapUiMediumMarginEnd">
+          <Label text="{i18n>fieldEmployeeID}"/>
+          <Title text="{detailModel>/EmployeeID}" level="H4"/>
+        </VBox>
+
+        <VBox class="sapUiMediumMarginEnd">
+          <Label text="{i18n>fieldEmploymentStatus}"/>
+          <ObjectStatus
+            text="{detailModel>/EmploymentStatus}"
+            state="{= ${detailModel>/EmploymentStatus} === 'Active' ? 'Success' : (${detailModel>/EmploymentStatus} === 'On Leave' ? 'Warning' : 'Error') }"
+            icon="{= ${detailModel>/EmploymentStatus} === 'Active' ? 'sap-icon://sys-enter-2' : (${detailModel>/EmploymentStatus} === 'On Leave' ? 'sap-icon://away' : 'sap-icon://error') }"
+            class="sapMObjectStatusLarge"/>
+        </VBox>
+
+        <VBox class="sapUiMediumMarginEnd">
+          <Label text="{i18n>fieldDepartment}"/>
+          <Text text="{detailModel>/Department}" class="sapUiTinyMarginTop"/>
+        </VBox>
+
+        <VBox class="sapUiMediumMarginEnd">
+          <Label text="{i18n>fieldOfficeLocation}"/>
+          <Text text="{detailModel>/OfficeLocation}" class="sapUiTinyMarginTop"/>
+        </VBox>
+
+        <VBox class="sapUiMediumMarginEnd">
+          <Label text="{i18n>fieldManager}"/>
+          <Text text="{detailModel>/Manager}" class="sapUiTinyMarginTop"/>
+        </VBox>
+      </layout:HorizontalLayout>
+    </uxap:headerContent>
+
+    <!-- Sections -->
+    <uxap:sections>
+
+      <!-- Section A: Personal Information -->
+      <uxap:ObjectPageSection id="secPersonal" title="{i18n>sectionPersonalInfo}">
+        <uxap:subSections>
+          <uxap:ObjectPageSubSection id="subPersonal" title="{i18n>sectionPersonalInfo}">
+            <uxap:blocks>
+              <form:SimpleForm
+                editable="{appView>/isEditMode}"
+                layout="ResponsiveGridLayout"
+                labelSpanXL="4" labelSpanL="4" labelSpanM="4" labelSpanS="12"
+                columnsXL="2" columnsL="2" columnsM="1">
+                <form:content>
+                  <Label text="{i18n>fieldFirstName}" required="{appView>/isEditMode}"/>
+                  <Text text="{detailModel>/FirstName}" visible="{= !${appView>/isEditMode} }"/>
+                  <Input value="{detailModel>/FirstName}" visible="{appView>/isEditMode}"/>
+
+                  <Label text="{i18n>fieldLastName}" required="{appView>/isEditMode}"/>
+                  <Text text="{detailModel>/LastName}" visible="{= !${appView>/isEditMode} }"/>
+                  <Input value="{detailModel>/LastName}" visible="{appView>/isEditMode}"/>
+
+                  <Label text="{i18n>fieldEmail}" required="{appView>/isEditMode}"/>
+                  <Link text="{detailModel>/Email}" href="mailto:{detailModel>/Email}" visible="{= !${appView>/isEditMode} }"/>
+                  <Input value="{detailModel>/Email}" type="Email" visible="{appView>/isEditMode}"/>
+
+                  <Label text="{i18n>fieldPhoneNumber}"/>
+                  <Text text="{detailModel>/PhoneNumber}" visible="{= !${appView>/isEditMode} }"/>
+                  <Input value="{detailModel>/PhoneNumber}" type="Tel" visible="{appView>/isEditMode}"/>
+
+                  <Label text="{i18n>fieldDateOfBirth}"/>
+                  <Text text="{detailModel>/DateOfBirth}" visible="{= !${appView>/isEditMode} }"/>
+                  <DatePicker
+                    value="{detailModel>/DateOfBirth}"
+                    valueFormat="yyyy-MM-dd"
+                    displayFormat="medium"
+                    visible="{appView>/isEditMode}"/>
+                </form:content>
+              </form:SimpleForm>
+            </uxap:blocks>
+          </uxap:ObjectPageSubSection>
+        </uxap:subSections>
+      </uxap:ObjectPageSection>
+
+      <!-- Section B: Employment Details -->
+      <uxap:ObjectPageSection id="secEmployment" title="{i18n>sectionEmploymentDetails}">
+        <uxap:subSections>
+          <uxap:ObjectPageSubSection id="subEmployment" title="{i18n>sectionEmploymentDetails}">
+            <uxap:blocks>
+              <form:SimpleForm
+                editable="{appView>/isEditMode}"
+                layout="ResponsiveGridLayout"
+                labelSpanXL="4" labelSpanL="4" labelSpanM="4" labelSpanS="12"
+                columnsXL="2" columnsL="2" columnsM="1">
+                <form:content>
+                  <Label text="{i18n>fieldEmployeeID}"/>
+                  <Text text="{detailModel>/EmployeeID}"/>
+
+                  <Label text="{i18n>fieldDepartment}" required="{appView>/isEditMode}"/>
+                  <Text text="{detailModel>/Department}" visible="{= !${appView>/isEditMode} }"/>
+                  <Input
+                    value="{detailModel>/Department}"
+                    showValueHelp="true"
+                    valueHelpRequest=".onOpenDeptValueHelpForDetail"
+                    visible="{appView>/isEditMode}"/>
+
+                  <Label text="{i18n>fieldJobTitle}" required="{appView>/isEditMode}"/>
+                  <Text text="{detailModel>/JobTitle}" visible="{= !${appView>/isEditMode} }"/>
+                  <Input value="{detailModel>/JobTitle}" visible="{appView>/isEditMode}"/>
+
+                  <Label text="{i18n>fieldManager}"/>
+                  <Text text="{detailModel>/Manager}" visible="{= !${appView>/isEditMode} }"/>
+                  <Input
+                    value="{detailModel>/Manager}"
+                    showValueHelp="true"
+                    valueHelpRequest=".onOpenMgrValueHelpForDetail"
+                    visible="{appView>/isEditMode}"/>
+
+                  <Label text="{i18n>fieldJoiningDate}" required="{appView>/isEditMode}"/>
+                  <Text text="{detailModel>/JoiningDate}" visible="{= !${appView>/isEditMode} }"/>
+                  <DatePicker
+                    value="{detailModel>/JoiningDate}"
+                    valueFormat="yyyy-MM-dd"
+                    displayFormat="medium"
+                    visible="{appView>/isEditMode}"/>
+
+                  <Label text="{i18n>fieldEmploymentType}" required="{appView>/isEditMode}"/>
+                  <Text text="{detailModel>/EmploymentType}" visible="{= !${appView>/isEditMode} }"/>
+                  <Select selectedKey="{detailModel>/EmploymentType}" visible="{appView>/isEditMode}" width="100%">
+                    <core:Item key="Full-Time" text="Full-Time"/>
+                    <core:Item key="Part-Time" text="Part-Time"/>
+                    <core:Item key="Contractor" text="Contractor"/>
+                    <core:Item key="Intern" text="Intern"/>
+                  </Select>
+
+                  <Label text="{i18n>fieldEmploymentStatus}" required="{appView>/isEditMode}"/>
+                  <ObjectStatus
+                    text="{detailModel>/EmploymentStatus}"
+                    state="{= ${detailModel>/EmploymentStatus} === 'Active' ? 'Success' : (${detailModel>/EmploymentStatus} === 'On Leave' ? 'Warning' : 'Error') }"
+                    visible="{= !${appView>/isEditMode} }"/>
+                  <Select selectedKey="{detailModel>/EmploymentStatus}" visible="{appView>/isEditMode}" width="100%">
+                    <core:Item key="Active" text="Active"/>
+                    <core:Item key="On Leave" text="On Leave"/>
+                    <core:Item key="Inactive" text="Inactive"/>
+                  </Select>
+                </form:content>
+              </form:SimpleForm>
+            </uxap:blocks>
+          </uxap:ObjectPageSubSection>
+        </uxap:subSections>
+      </uxap:ObjectPageSection>
+
+      <!-- Section C: Compensation -->
+      <uxap:ObjectPageSection id="secCompensation" title="{i18n>sectionCompensation}">
+        <uxap:subSections>
+          <uxap:ObjectPageSubSection id="subCompensation" title="{i18n>sectionCompensation}">
+            <uxap:blocks>
+              <form:SimpleForm
+                editable="{appView>/isEditMode}"
+                layout="ResponsiveGridLayout"
+                labelSpanXL="4" labelSpanL="4" labelSpanM="4" labelSpanS="12"
+                columnsXL="2" columnsL="2" columnsM="1">
+                <form:content>
+                  <Label text="{i18n>fieldSalary}"/>
+                  <ObjectNumber
+                    number="{
+                      parts: [
+                        {path: 'detailModel>/Salary'},
+                        {path: 'detailModel>/Currency'}
+                      ],
+                      type: 'sap.ui.model.type.Currency',
+                      formatOptions: {showMeasure: false}
+                    }"
+                    unit="{detailModel>/Currency}"
+                    visible="{= !${appView>/isEditMode} }"/>
+                  <Input value="{detailModel>/Salary}" type="Number" visible="{appView>/isEditMode}"/>
+
+                  <Label text="{i18n>fieldCurrency}"/>
+                  <Text text="{detailModel>/Currency}" visible="{= !${appView>/isEditMode} }"/>
+                  <Select selectedKey="{detailModel>/Currency}" visible="{appView>/isEditMode}" width="100%">
+                    <core:Item key="EUR" text="EUR - Euro"/>
+                    <core:Item key="USD" text="USD - US Dollar"/>
+                    <core:Item key="GBP" text="GBP - British Pound"/>
+                    <core:Item key="INR" text="INR - Indian Rupee"/>
+                    <core:Item key="JPY" text="JPY - Japanese Yen"/>
+                  </Select>
+                </form:content>
+              </form:SimpleForm>
+            </uxap:blocks>
+          </uxap:ObjectPageSubSection>
+        </uxap:subSections>
+      </uxap:ObjectPageSection>
+
+      <!-- Section D: Office Information -->
+      <uxap:ObjectPageSection id="secOffice" title="{i18n>sectionOfficeInfo}">
+        <uxap:subSections>
+          <uxap:ObjectPageSubSection id="subOffice" title="{i18n>sectionOfficeInfo}">
+            <uxap:blocks>
+              <form:SimpleForm
+                editable="{appView>/isEditMode}"
+                layout="ResponsiveGridLayout"
+                labelSpanXL="4" labelSpanL="4" labelSpanM="4" labelSpanS="12"
+                columnsXL="2" columnsL="2" columnsM="1">
+                <form:content>
+                  <Label text="{i18n>fieldOfficeLocation}"/>
+                  <Text text="{detailModel>/OfficeLocation}" visible="{= !${appView>/isEditMode} }"/>
+                  <Select selectedKey="{detailModel>/OfficeLocation}" visible="{appView>/isEditMode}" width="100%">
+                    <core:Item key="Walldorf, Germany" text="Walldorf, Germany"/>
+                    <core:Item key="Palo Alto, USA" text="Palo Alto, USA"/>
+                    <core:Item key="Bangalore, India" text="Bangalore, India"/>
+                    <core:Item key="London, UK" text="London, UK"/>
+                    <core:Item key="Paris, France" text="Paris, France"/>
+                    <core:Item key="Singapore" text="Singapore"/>
+                    <core:Item key="Tokyo, Japan" text="Tokyo, Japan"/>
+                  </Select>
+
+                  <Label text="{i18n>fieldDepartment}"/>
+                  <Text text="{detailModel>/Department}"/>
+                </form:content>
+              </form:SimpleForm>
+            </uxap:blocks>
+          </uxap:ObjectPageSubSection>
+        </uxap:subSections>
+      </uxap:ObjectPageSection>
+
+    </uxap:sections>
+
+    <!-- Footer for Edit Mode -->
+    <uxap:footer>
+      <OverflowToolbar>
+        <ToolbarSpacer/>
+        <Button text="{i18n>btnSave}" type="Emphasized" press=".onSavePress"/>
+        <Button text="{i18n>btnCancel}" press=".onCancelPress"/>
+      </OverflowToolbar>
+    </uxap:footer>
+
+  </uxap:ObjectPageLayout>
+</mvc:View>

@@ -1,0 +1,17 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
+  <SelectDialog
+    id="managerSelectDialog"
+    title="{i18n>titleSelectManager}"
+    items="{managers>/}"
+    search=".onManagerSearch"
+    confirm=".onManagerConfirm"
+    cancel=".onManagerCancel">
+    <StandardListItem
+      title="{managers>ManagerName}"
+      description="{managers>JobTitle} ({managers>Department})"
+      info="{managers>ManagerID}"
+      icon="sap-icon://manager"/>
+  </SelectDialog>
+</core:FragmentDefinition>

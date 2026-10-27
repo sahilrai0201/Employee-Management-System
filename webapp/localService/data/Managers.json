@@ -1,0 +1,9 @@
+[
+  { "ManagerID": "MGR-001", "ManagerName": "Alexander Wright", "Department": "Executive Management", "JobTitle": "Chief Technology Officer" },
+  { "ManagerID": "MGR-002", "ManagerName": "Elena Rostova", "Department": "Human Resources", "JobTitle": "Chief People Officer" },
+  { "ManagerID": "MGR-003", "ManagerName": "Sarah Jenkins", "Department": "Engineering", "JobTitle": "Lead Cloud Architect" },
+  { "ManagerID": "MGR-004", "ManagerName": "Marcus Vance", "Department": "Human Resources", "JobTitle": "Senior HR Business Partner" },
+  { "ManagerID": "MGR-005", "ManagerName": "David Kowalski", "Department": "Finance", "JobTitle": "Global Financial Controller" },
+  { "ManagerID": "MGR-006", "ManagerName": "Kenji Takahashi", "Department": "Operations", "JobTitle": "Supply Chain Principal" },
+  { "ManagerID": "MGR-007", "ManagerName": "Thomas Mueller", "Department": "Sales", "JobTitle": "VP Enterprise Accounts" }
+]

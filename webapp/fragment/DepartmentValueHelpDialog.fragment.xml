@@ -1,0 +1,17 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core">
+  <SelectDialog
+    id="deptSelectDialog"
+    title="{i18n>titleSelectDepartment}"
+    items="{departments>/}"
+    search=".onDepartmentSearch"
+    confirm=".onDepartmentConfirm"
+    cancel=".onDepartmentCancel">
+    <StandardListItem
+      title="{departments>DepartmentName}"
+      description="{departments>DepartmentID} - Head: {departments>Head}"
+      info="{departments>CostCenter}"
+      icon="sap-icon://group"/>
+  </SelectDialog>
+</core:FragmentDefinition>

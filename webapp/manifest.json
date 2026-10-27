@@ -1,0 +1,115 @@
+{
+  "_version": "1.49.0",
+  "sap.app": {
+    "id": "corp.ems.employee",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "1.0.0"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "dataSources": {
+      "mainService": {
+        "uri": "/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001/",
+        "type": "OData",
+        "settings": {
+          "annotations": ["annotation"],
+          "localUri": "localService/metadata.xml",
+          "odataVersion": "4.0"
+        }
+      },
+      "annotation": {
+        "type": "ODataAnnotation",
+        "uri": "annotations/annotation.xml",
+        "settings": {
+          "localUri": "annotations/annotation.xml"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "sap-icon://hr-approval",
+      "favIcon": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "rootView": {
+      "viewName": "corp.ems.employee.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "app"
+    },
+    "dependencies": {
+      "minUI5Version": "1.108.0",
+      "libs": {
+        "sap.m": {},
+        "sap.f": {},
+        "sap.uxap": {},
+        "sap.ui.core": {},
+        "sap.ui.layout": {},
+        "sap.ui.export": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "corp.ems.employee.i18n.i18n"
+        }
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "viewType": "XML",
+        "viewPath": "corp.ems.employee.view",
+        "controlId": "appContainer",
+        "controlAggregation": "pages",
+        "bypassed": {
+          "target": "EmployeeList"
+        },
+        "async": true
+      },
+      "routes": [
+        {
+          "pattern": "",
+          "name": "EmployeeList",
+          "target": "EmployeeList"
+        },
+        {
+          "pattern": "Employee/{EmployeeID}",
+          "name": "EmployeeDetails",
+          "target": "EmployeeDetails"
+        }
+      ],
+      "targets": {
+        "EmployeeList": {
+          "viewName": "ListReport",
+          "viewId": "ListReport",
+          "viewLevel": 1
+        },
+        "EmployeeDetails": {
+          "viewName": "ObjectPage",
+          "viewId": "ObjectPage",
+          "viewLevel": 2
+        }
+      }
+    }
+  }
+}

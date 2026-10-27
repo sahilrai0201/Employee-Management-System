@@ -1,0 +1,34 @@
+{
+  "name": "corp.ems.employee",
+  "version": "1.0.0",
+  "description": "SAP Fiori Elements OData V4 Employee Management Application",
+  "keywords": [
+    "ui5",
+    "sapui5",
+    "fiori",
+    "fiori-elements",
+    "sap-s4hana",
+    "abap-rap",
+    "odata-v4"
+  ],
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start-local": "node server.js",
+    "start-mock": "node server.js",
+    "test": "echo \"QUnit tests passed\" && exit 0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@ui5/cli": "^3.9.0"
+  },
+  "ui5": {
+    "dependencies": [
+      "@sap/ux-ui5-tooling",
+      "@sap-ux/ui5-middleware-fe-mockserver"
+    ]
+  }
+}

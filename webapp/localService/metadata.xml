@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+    <edmx:Include Namespace="Org.OData.Core.V1" Alias="Core"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Capabilities.V1.xml">
+    <edmx:Include Namespace="Org.OData.Capabilities.V1" Alias="Capabilities"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Measures.V1.xml">
+    <edmx:Include Namespace="Org.OData.Measures.V1" Alias="Measures"/>
+  </edmx:Reference>
+  <edmx:DataServices>
+    <Schema Namespace="com.sap.gateway.srvd.zui_employee_o4.v0001" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+      <EntityType Name="EmployeeType">
+        <Key>
+          <PropertyRef Name="EmployeeID"/>
+        </Key>
+        <Property Name="EmployeeID" Type="Edm.String" Nullable="false" MaxLength="10"/>
+        <Property Name="FirstName" Type="Edm.String" Nullable="false" MaxLength="40"/>
+        <Property Name="LastName" Type="Edm.String" Nullable="false" MaxLength="40"/>
+        <Property Name="FullName" Type="Edm.String" MaxLength="80"/>
+        <Property Name="Email" Type="Edm.String" Nullable="false" MaxLength="100"/>
+        <Property Name="PhoneNumber" Type="Edm.String" MaxLength="30"/>
+        <Property Name="DateOfBirth" Type="Edm.Date"/>
+        <Property Name="Department" Type="Edm.String" Nullable="false" MaxLength="50"/>
+        <Property Name="JobTitle" Type="Edm.String" Nullable="false" MaxLength="60"/>
+        <Property Name="Manager" Type="Edm.String" MaxLength="80"/>
+        <Property Name="JoiningDate" Type="Edm.Date" Nullable="false"/>
+        <Property Name="EmploymentType" Type="Edm.String" Nullable="false" MaxLength="20"/>
+        <Property Name="EmploymentStatus" Type="Edm.String" Nullable="false" MaxLength="20"/>
+        <Property Name="OfficeLocation" Type="Edm.String" MaxLength="50"/>
+        <Property Name="Salary" Type="Edm.Decimal" Precision="13" Scale="2"/>
+        <Property Name="Currency" Type="Edm.String" MaxLength="3"/>
+        <Property Name="StatusCriticality" Type="Edm.Int32"/>
+      </EntityType>
+
+      <EntityType Name="DepartmentType">
+        <Key>
+          <PropertyRef Name="DepartmentID"/>
+        </Key>
+        <Property Name="DepartmentID" Type="Edm.String" Nullable="false" MaxLength="10"/>
+        <Property Name="DepartmentName" Type="Edm.String" Nullable="false" MaxLength="50"/>
+        <Property Name="Head" Type="Edm.String" MaxLength="80"/>
+        <Property Name="CostCenter" Type="Edm.String" MaxLength="20"/>
+      </EntityType>
+
+      <EntityType Name="ManagerType">
+        <Key>
+          <PropertyRef Name="ManagerID"/>
+        </Key>
+        <Property Name="ManagerID" Type="Edm.String" Nullable="false" MaxLength="10"/>
+        <Property Name="ManagerName" Type="Edm.String" Nullable="false" MaxLength="80"/>
+        <Property Name="Department" Type="Edm.String" MaxLength="50"/>
+        <Property Name="JobTitle" Type="Edm.String" MaxLength="60"/>
+      </EntityType>
+
+      <EntityContainer Name="Container">
+        <EntitySet Name="Employee" EntityType="com.sap.gateway.srvd.zui_employee_o4.v0001.EmployeeType"/>
+        <EntitySet Name="Departments" EntityType="com.sap.gateway.srvd.zui_employee_o4.v0001.DepartmentType"/>
+        <EntitySet Name="Managers" EntityType="com.sap.gateway.srvd.zui_employee_o4.v0001.ManagerType"/>
+      </EntityContainer>
+
+      <Annotations Target="com.sap.gateway.srvd.zui_employee_o4.v0001.EmployeeType/Salary">
+        <Annotation Term="Measures.ISOCurrency" Path="Currency"/>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

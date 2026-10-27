@@ -1,0 +1,239 @@
+<mvc:View
+  controllerName="corp.ems.employee.controller.ListReport"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:f="sap.f"
+  xmlns:core="sap.ui.core"
+  xmlns:layout="sap.ui.layout"
+  xmlns:form="sap.ui.layout.form"
+  height="100%">
+
+  <f:DynamicPage id="listReportPage" headerExpanded="true" showFooter="false" fitContent="true">
+    <!-- Dynamic Page Title -->
+    <f:title>
+      <f:DynamicPageTitle id="pageTitle">
+        <f:heading>
+          <Title text="{i18n>listReportTitle}" level="H2"/>
+        </f:heading>
+        <f:expandedContent>
+          <Label text="Human Resources Management • Live OData V4 Directory"/>
+        </f:expandedContent>
+        <f:snappedContent>
+          <Label text="Employees List Report"/>
+        </f:snappedContent>
+      </f:DynamicPageTitle>
+    </f:title>
+
+    <!-- Filter Bar Header -->
+    <f:header>
+      <f:DynamicPageHeader pinnable="true">
+        <VBox>
+          <!-- Fiori Standard Filter Grid -->
+          <layout:Grid defaultSpan="XL3 L4 M6 S12" class="sapUiSmallMarginBottom">
+            
+            <!-- Filter 1: Employee ID -->
+            <VBox>
+              <Label text="{i18n>filterEmployeeID}"/>
+              <Input
+                id="filterEmpID"
+                placeholder="Search by ID..."
+                submit=".onSearchFilters"/>
+            </VBox>
+
+            <!-- Filter 2: Employee Name -->
+            <VBox>
+              <Label text="{i18n>filterFullName}"/>
+              <Input
+                id="filterName"
+                placeholder="Search by name..."
+                submit=".onSearchFilters"/>
+            </VBox>
+
+            <!-- Filter 3: Department -->
+            <VBox>
+              <Label text="{i18n>filterDepartment}"/>
+              <Input
+                id="filterDept"
+                placeholder="Department"
+                showValueHelp="true"
+                valueHelpRequest=".onOpenDeptValueHelpForFilter"/>
+            </VBox>
+
+            <!-- Filter 4: Job Title -->
+            <VBox>
+              <Label text="{i18n>filterJobTitle}"/>
+              <Input
+                id="filterJobTitle"
+                placeholder="Job title..."
+                submit=".onSearchFilters"/>
+            </VBox>
+
+            <!-- Filter 5: Employment Status -->
+            <VBox>
+              <Label text="{i18n>filterEmploymentStatus}"/>
+              <Select id="filterStatus" width="100%">
+                <core:Item key="" text="All Statuses"/>
+                <core:Item key="Active" text="Active"/>
+                <core:Item key="On Leave" text="On Leave"/>
+                <core:Item key="Inactive" text="Inactive"/>
+              </Select>
+            </VBox>
+
+            <!-- Filter 6: Joining Date -->
+            <VBox>
+              <Label text="{i18n>filterJoiningDate}"/>
+              <DatePicker
+                id="filterJoiningDate"
+                placeholder="YYYY-MM-DD"
+                valueFormat="yyyy-MM-dd"
+                displayFormat="medium"/>
+            </VBox>
+
+            <!-- Filter 7: Employment Type -->
+            <VBox>
+              <Label text="{i18n>filterEmploymentType}"/>
+              <Select id="filterEmpType" width="100%">
+                <core:Item key="" text="All Types"/>
+                <core:Item key="Full-Time" text="Full-Time"/>
+                <core:Item key="Part-Time" text="Part-Time"/>
+                <core:Item key="Contractor" text="Contractor"/>
+                <core:Item key="Intern" text="Intern"/>
+              </Select>
+            </VBox>
+
+            <!-- Filter Actions Buttons -->
+            <HBox alignItems="End" class="sapUiTinyMarginTop">
+              <Button
+                id="btnFilterGo"
+                text="{i18n>btnGo}"
+                type="Emphasized"
+                press=".onSearchFilters"
+                class="sapUiTinyMarginEnd"/>
+              <Button
+                id="btnFilterClear"
+                text="{i18n>btnClear}"
+                press=".onClearFilters"
+                class="sapUiTinyMarginEnd"/>
+              <Button
+                id="btnFilterAdapt"
+                text="{i18n>btnAdaptFilters}"
+                icon="sap-icon://filter"
+                press=".onAdaptFilters"/>
+            </HBox>
+
+          </layout:Grid>
+        </VBox>
+      </f:DynamicPageHeader>
+    </f:header>
+
+    <!-- List Report Table Content -->
+    <f:content>
+      <Table
+        id="employeeTable"
+        items="{employeeModel>/}"
+        mode="MultiSelect"
+        selectionChange=".onTableSelectionChange"
+        growing="true"
+        growingThreshold="20"
+        growingScrollToLoad="true"
+        noDataText="No employee records found matching your filter criteria."
+        sticky="ColumnHeaders,HeaderToolbar"
+        class="sapFDynamicPageAlignContent">
+
+        <!-- Table Toolbar -->
+        <headerToolbar>
+          <OverflowToolbar id="tableToolbar">
+            <Title
+              id="tableTitle"
+              text="Employees ({appView>/totalCount})"
+              level="H3"/>
+            <ToolbarSpacer/>
+            <SearchField
+              id="globalSearchField"
+              placeholder="Search table..."
+              width="240px"
+              search=".onQuickSearch"/>
+            <Button
+              id="btnCreateEmployee"
+              text="{i18n>btnCreate}"
+              type="Emphasized"
+              icon="sap-icon://add"
+              press=".onOpenCreateDialog"/>
+            <Button
+              id="btnEditEmployee"
+              text="{i18n>btnEdit}"
+              icon="sap-icon://edit"
+              enabled="{= ${appView>/selectedCount} === 1 }"
+              press=".onEditSelectedEmployee"/>
+            <Button
+              id="btnDeleteEmployee"
+              text="{i18n>btnDelete}"
+              icon="sap-icon://delete"
+              type="Reject"
+              enabled="{= ${appView>/selectedCount} &gt; 0 }"
+              press=".onDeleteSelectedEmployees"/>
+            <Button
+              id="btnRefreshTable"
+              icon="sap-icon://refresh"
+              tooltip="{i18n>btnRefresh}"
+              press=".onRefreshData"/>
+            <Button
+              id="btnExportExcel"
+              icon="sap-icon://excel-attachment"
+              tooltip="{i18n>btnExport}"
+              press=".onExportSpreadsheet"/>
+          </OverflowToolbar>
+        </headerToolbar>
+
+        <!-- Columns -->
+        <columns>
+          <Column minScreenWidth="Tablet" demandPopin="false" width="110px">
+            <Text text="{i18n>fieldEmployeeID}"/>
+          </Column>
+          <Column minScreenWidth="Phone" demandPopin="false" width="170px">
+            <Text text="{i18n>fieldFullName}"/>
+          </Column>
+          <Column minScreenWidth="Tablet" demandPopin="true" width="140px">
+            <Text text="{i18n>fieldDepartment}"/>
+          </Column>
+          <Column minScreenWidth="Desktop" demandPopin="true" width="180px">
+            <Text text="{i18n>fieldJobTitle}"/>
+          </Column>
+          <Column minScreenWidth="Desktop" demandPopin="true">
+            <Text text="{i18n>fieldEmail}"/>
+          </Column>
+          <Column minScreenWidth="Desktop" demandPopin="true" width="115px">
+            <Text text="{i18n>fieldJoiningDate}"/>
+          </Column>
+          <Column minScreenWidth="Desktop" demandPopin="true" width="120px">
+            <Text text="{i18n>fieldEmploymentType}"/>
+          </Column>
+          <Column hAlign="End" width="125px">
+            <Text text="{i18n>fieldEmploymentStatus}"/>
+          </Column>
+        </columns>
+
+        <!-- Row Template -->
+        <items>
+          <ColumnListItem
+            type="Navigation"
+            press=".onItemPress">
+            <cells>
+              <ObjectIdentifier title="{employeeModel>EmployeeID}"/>
+              <ObjectIdentifier title="{employeeModel>FullName}" text="{employeeModel>JobTitle}"/>
+              <Text text="{employeeModel>Department}"/>
+              <Text text="{employeeModel>JobTitle}"/>
+              <Link text="{employeeModel>Email}" href="mailto:{employeeModel>Email}"/>
+              <Text text="{employeeModel>JoiningDate}"/>
+              <Text text="{employeeModel>EmploymentType}"/>
+              <ObjectStatus
+                text="{employeeModel>EmploymentStatus}"
+                state="{= ${employeeModel>EmploymentStatus} === 'Active' ? 'Success' : (${employeeModel>EmploymentStatus} === 'On Leave' ? 'Warning' : 'Error') }"
+                icon="{= ${employeeModel>EmploymentStatus} === 'Active' ? 'sap-icon://sys-enter-2' : (${employeeModel>EmploymentStatus} === 'On Leave' ? 'sap-icon://away' : 'sap-icon://error') }"/>
+            </cells>
+          </ColumnListItem>
+        </items>
+      </Table>
+    </f:content>
+  </f:DynamicPage>
+</mvc:View>

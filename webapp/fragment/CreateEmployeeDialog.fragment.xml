@@ -1,0 +1,186 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:form="sap.ui.layout.form"
+  xmlns:layout="sap.ui.layout">
+  
+  <Dialog
+    id="createEmployeeDialog"
+    title="Create Employee"
+    contentWidth="680px"
+    contentHeight="700px"
+    resizable="true"
+    draggable="true">
+    
+    <content>
+      <VBox class="sapUiSmallMargin">
+        <MessageStrip
+          id="createDialogMessageStrip"
+          text="Please provide the employee details. Fields marked with an asterisk (*) are mandatory."
+          type="Information"
+          showIcon="true"
+          class="sapUiSmallMarginBottom"/>
+
+        <!-- Section: Personal Information -->
+        <Panel headerText="Personal Information" expandable="true" expanded="true" width="100%">
+          <form:SimpleForm
+            editable="true"
+            layout="ResponsiveGridLayout"
+            labelSpanXL="4" labelSpanL="4" labelSpanM="4" labelSpanS="12"
+            adjustLabelSpan="false"
+            emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0"
+            columnsXL="2" columnsL="2" columnsM="1"
+            singleContainerFullSize="false">
+            <form:content>
+              <Label text="{i18n>fieldEmployeeID}" required="true"/>
+              <Input
+                id="createInputID"
+                value="{newEmployee>/EmployeeID}"
+                placeholder="e.g. EMP-1011"
+                liveChange=".onLiveValidateID"/>
+
+              <Label text="{i18n>fieldFirstName}" required="true"/>
+              <Input
+                id="createInputFirstName"
+                value="{newEmployee>/FirstName}"
+                placeholder="Given name"/>
+
+              <Label text="{i18n>fieldLastName}" required="true"/>
+              <Input
+                id="createInputLastName"
+                value="{newEmployee>/LastName}"
+                placeholder="Family name"/>
+
+              <Label text="{i18n>fieldEmail}" required="true"/>
+              <Input
+                id="createInputEmail"
+                type="Email"
+                value="{newEmployee>/Email}"
+                placeholder="name@enterprise.corp"/>
+
+              <Label text="{i18n>fieldPhoneNumber}"/>
+              <Input
+                id="createInputPhone"
+                type="Tel"
+                value="{newEmployee>/PhoneNumber}"
+                placeholder="+1 (555) 000-0000"/>
+
+              <Label text="{i18n>fieldDateOfBirth}"/>
+              <DatePicker
+                id="createInputDOB"
+                value="{newEmployee>/DateOfBirth}"
+                valueFormat="yyyy-MM-dd"
+                displayFormat="medium"/>
+            </form:content>
+          </form:SimpleForm>
+        </Panel>
+
+        <!-- Section: Employment Information -->
+        <Panel headerText="Employment Information" expandable="true" expanded="true" width="100%" class="sapUiSmallMarginTop">
+          <form:SimpleForm
+            editable="true"
+            layout="ResponsiveGridLayout"
+            labelSpanXL="4" labelSpanL="4" labelSpanM="4" labelSpanS="12"
+            adjustLabelSpan="false"
+            emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0"
+            columnsXL="2" columnsL="2" columnsM="1"
+            singleContainerFullSize="false">
+            <form:content>
+              <Label text="{i18n>fieldDepartment}" required="true"/>
+              <Input
+                id="createInputDept"
+                value="{newEmployee>/Department}"
+                showValueHelp="true"
+                valueHelpRequest=".onOpenDeptValueHelpForCreate"
+                placeholder="Select or enter department"/>
+
+              <Label text="{i18n>fieldJobTitle}" required="true"/>
+              <Input
+                id="createInputJobTitle"
+                value="{newEmployee>/JobTitle}"
+                placeholder="e.g. Senior Software Engineer"/>
+
+              <Label text="{i18n>fieldManager}"/>
+              <Input
+                id="createInputManager"
+                value="{newEmployee>/Manager}"
+                showValueHelp="true"
+                valueHelpRequest=".onOpenMgrValueHelpForCreate"
+                placeholder="Select reporting manager"/>
+
+              <Label text="{i18n>fieldJoiningDate}" required="true"/>
+              <DatePicker
+                id="createInputJoiningDate"
+                value="{newEmployee>/JoiningDate}"
+                valueFormat="yyyy-MM-dd"
+                displayFormat="medium"/>
+
+              <Label text="{i18n>fieldEmploymentType}" required="true"/>
+              <Select id="createSelectEmpType" selectedKey="{newEmployee>/EmploymentType}" width="100%">
+                <core:Item key="Full-Time" text="Full-Time"/>
+                <core:Item key="Part-Time" text="Part-Time"/>
+                <core:Item key="Contractor" text="Contractor"/>
+                <core:Item key="Intern" text="Intern"/>
+              </Select>
+
+              <Label text="{i18n>fieldEmploymentStatus}" required="true"/>
+              <Select id="createSelectEmpStatus" selectedKey="{newEmployee>/EmploymentStatus}" width="100%">
+                <core:Item key="Active" text="Active"/>
+                <core:Item key="On Leave" text="On Leave"/>
+                <core:Item key="Inactive" text="Inactive"/>
+              </Select>
+            </form:content>
+          </form:SimpleForm>
+        </Panel>
+
+        <!-- Section: Additional Information -->
+        <Panel headerText="Additional Information" expandable="true" expanded="true" width="100%" class="sapUiSmallMarginTop">
+          <form:SimpleForm
+            editable="true"
+            layout="ResponsiveGridLayout"
+            labelSpanXL="4" labelSpanL="4" labelSpanM="4" labelSpanS="12"
+            adjustLabelSpan="false"
+            emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0"
+            columnsXL="2" columnsL="2" columnsM="1"
+            singleContainerFullSize="false">
+            <form:content>
+              <Label text="{i18n>fieldOfficeLocation}"/>
+              <Select id="createSelectLocation" selectedKey="{newEmployee>/OfficeLocation}" width="100%">
+                <core:Item key="Walldorf, Germany" text="Walldorf, Germany"/>
+                <core:Item key="Palo Alto, USA" text="Palo Alto, USA"/>
+                <core:Item key="Bangalore, India" text="Bangalore, India"/>
+                <core:Item key="London, UK" text="London, UK"/>
+                <core:Item key="Paris, France" text="Paris, France"/>
+                <core:Item key="Singapore" text="Singapore"/>
+                <core:Item key="Tokyo, Japan" text="Tokyo, Japan"/>
+              </Select>
+
+              <Label text="{i18n>fieldSalary}"/>
+              <Input
+                id="createInputSalary"
+                type="Number"
+                value="{newEmployee>/Salary}"
+                placeholder="e.g. 85000"/>
+
+              <Label text="{i18n>fieldCurrency}"/>
+              <Select id="createSelectCurrency" selectedKey="{newEmployee>/Currency}" width="100%">
+                <core:Item key="EUR" text="EUR - Euro"/>
+                <core:Item key="USD" text="USD - US Dollar"/>
+                <core:Item key="GBP" text="GBP - British Pound"/>
+                <core:Item key="INR" text="INR - Indian Rupee"/>
+                <core:Item key="JPY" text="JPY - Japanese Yen"/>
+              </Select>
+            </form:content>
+          </form:SimpleForm>
+        </Panel>
+      </VBox>
+    </content>
+
+    <beginButton>
+      <Button text="Create" type="Emphasized" press=".onCreateDialogSave"/>
+    </beginButton>
+    <endButton>
+      <Button text="Cancel" press=".onCreateDialogCancel"/>
+    </endButton>
+  </Dialog>
+</core:FragmentDefinition>

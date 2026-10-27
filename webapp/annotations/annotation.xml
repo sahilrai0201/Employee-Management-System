@@ -1,0 +1,251 @@
+<edmx:Edmx xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx" Version="4.0">
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+    <edmx:Include Namespace="Org.OData.Core.V1" Alias="Core"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Measures.V1.xml">
+    <edmx:Include Namespace="Org.OData.Measures.V1" Alias="Measures"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+    <edmx:Include Namespace="com.sap.vocabularies.Common.v1" Alias="Common"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
+    <edmx:Include Namespace="com.sap.vocabularies.UI.v1" Alias="UI"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001/$metadata">
+    <edmx:Include Namespace="com.sap.gateway.srvd.zui_employee_o4.v0001"/>
+  </edmx:Reference>
+
+  <edmx:DataServices>
+    <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="local">
+      <Annotations Target="com.sap.gateway.srvd.zui_employee_o4.v0001.EmployeeType">
+        <!-- Header Info -->
+        <Annotation Term="UI.HeaderInfo">
+          <Record>
+            <PropertyValue Property="TypeName" String="{@i18n>employeeTypeName}"/>
+            <PropertyValue Property="TypeNamePlural" String="{@i18n>employeeTypeNamePlural}"/>
+            <PropertyValue Property="Title">
+              <Record Type="UI.DataField">
+                <PropertyValue Property="Value" Path="FullName"/>
+              </Record>
+            </PropertyValue>
+            <PropertyValue Property="Description">
+              <Record Type="UI.DataField">
+                <PropertyValue Property="Value" Path="JobTitle"/>
+              </Record>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+
+        <!-- Selection Fields (Filter Bar) -->
+        <Annotation Term="UI.SelectionFields">
+          <Collection>
+            <PropertyPath>EmployeeID</PropertyPath>
+            <PropertyPath>FullName</PropertyPath>
+            <PropertyPath>Department</PropertyPath>
+            <PropertyPath>JobTitle</PropertyPath>
+            <PropertyPath>EmploymentStatus</PropertyPath>
+            <PropertyPath>JoiningDate</PropertyPath>
+            <PropertyPath>EmploymentType</PropertyPath>
+          </Collection>
+        </Annotation>
+
+        <!-- LineItem (List Report Table) -->
+        <Annotation Term="UI.LineItem">
+          <Collection>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="EmployeeID"/>
+              <PropertyValue Property="Label" String="{@i18n>fieldEmployeeID}"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="FullName"/>
+              <PropertyValue Property="Label" String="{@i18n>fieldFullName}"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Department"/>
+              <PropertyValue Property="Label" String="{@i18n>fieldDepartment}"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="JobTitle"/>
+              <PropertyValue Property="Label" String="{@i18n>fieldJobTitle}"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="Email"/>
+              <PropertyValue Property="Label" String="{@i18n>fieldEmail}"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="JoiningDate"/>
+              <PropertyValue Property="Label" String="{@i18n>fieldJoiningDate}"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="EmploymentType"/>
+              <PropertyValue Property="Label" String="{@i18n>fieldEmploymentType}"/>
+            </Record>
+            <Record Type="UI.DataField">
+              <PropertyValue Property="Value" Path="EmploymentStatus"/>
+              <PropertyValue Property="Label" String="{@i18n>fieldEmploymentStatus}"/>
+              <PropertyValue Property="Criticality" Path="StatusCriticality"/>
+            </Record>
+          </Collection>
+        </Annotation>
+
+        <!-- Header Facets -->
+        <Annotation Term="UI.HeaderFacets">
+          <Collection>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="Target" AnnotationPath="@UI.DataPoint#StatusDataPoint"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="Target" AnnotationPath="@UI.DataPoint#DepartmentDataPoint"/>
+            </Record>
+          </Collection>
+        </Annotation>
+
+        <Annotation Term="UI.DataPoint" Qualifier="StatusDataPoint">
+          <Record>
+            <PropertyValue Property="Title" String="{@i18n>fieldEmploymentStatus}"/>
+            <PropertyValue Property="Value" Path="EmploymentStatus"/>
+            <PropertyValue Property="Criticality" Path="StatusCriticality"/>
+          </Record>
+        </Annotation>
+
+        <Annotation Term="UI.DataPoint" Qualifier="DepartmentDataPoint">
+          <Record>
+            <PropertyValue Property="Title" String="{@i18n>fieldDepartment}"/>
+            <PropertyValue Property="Value" Path="Department"/>
+          </Record>
+        </Annotation>
+
+        <!-- Object Page Facets (Sections) -->
+        <Annotation Term="UI.Facets">
+          <Collection>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="PersonalInformationSection"/>
+              <PropertyValue Property="Label" String="{@i18n>sectionPersonalInfo}"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#PersonalInformation"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="EmploymentDetailsSection"/>
+              <PropertyValue Property="Label" String="{@i18n>sectionEmploymentDetails}"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#EmploymentDetails"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="CompensationSection"/>
+              <PropertyValue Property="Label" String="{@i18n>sectionCompensation}"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#Compensation"/>
+            </Record>
+            <Record Type="UI.ReferenceFacet">
+              <PropertyValue Property="ID" String="OfficeInformationSection"/>
+              <PropertyValue Property="Label" String="{@i18n>sectionOfficeInfo}"/>
+              <PropertyValue Property="Target" AnnotationPath="@UI.FieldGroup#OfficeInformation"/>
+            </Record>
+          </Collection>
+        </Annotation>
+
+        <!-- FieldGroup: Personal Information -->
+        <Annotation Term="UI.FieldGroup" Qualifier="PersonalInformation">
+          <Record>
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="FirstName"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldFirstName}"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="LastName"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldLastName}"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="Email"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldEmail}"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="PhoneNumber"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldPhoneNumber}"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="DateOfBirth"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldDateOfBirth}"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+
+        <!-- FieldGroup: Employment Details -->
+        <Annotation Term="UI.FieldGroup" Qualifier="EmploymentDetails">
+          <Record>
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="EmployeeID"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldEmployeeID}"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="Department"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldDepartment}"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="JobTitle"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldJobTitle}"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="Manager"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldManager}"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="JoiningDate"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldJoiningDate}"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="EmploymentType"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldEmploymentType}"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="EmploymentStatus"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldEmploymentStatus}"/>
+                  <PropertyValue Property="Criticality" Path="StatusCriticality"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+
+        <!-- FieldGroup: Compensation -->
+        <Annotation Term="UI.FieldGroup" Qualifier="Compensation">
+          <Record>
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="Salary"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldSalary}"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="Currency"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldCurrency}"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+
+        <!-- FieldGroup: Office Information -->
+        <Annotation Term="UI.FieldGroup" Qualifier="OfficeInformation">
+          <Record>
+            <PropertyValue Property="Data">
+              <Collection>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="OfficeLocation"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldOfficeLocation}"/>
+                </Record>
+                <Record Type="UI.DataField">
+                  <PropertyValue Property="Value" Path="Department"/>
+                  <PropertyValue Property="Label" String="{@i18n>fieldDepartment}"/>
+                </Record>
+              </Collection>
+            </PropertyValue>
+          </Record>
+        </Annotation>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>
