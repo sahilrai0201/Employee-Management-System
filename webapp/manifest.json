@@ -11,19 +11,11 @@
     "description": "{{appDescription}}",
     "dataSources": {
       "mainService": {
-        "uri": "/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001/",
+        "uri": "/sap/opu/odata/sap/ZEMPLOYEE_SRV/",
         "type": "OData",
         "settings": {
-          "annotations": ["annotation"],
           "localUri": "localService/metadata.xml",
-          "odataVersion": "4.0"
-        }
-      },
-      "annotation": {
-        "type": "ODataAnnotation",
-        "uri": "annotations/annotation.xml",
-        "settings": {
-          "localUri": "annotations/annotation.xml"
+          "odataVersion": "2.0"
         }
       }
     }

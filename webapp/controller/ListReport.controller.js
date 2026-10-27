@@ -151,16 +151,23 @@ sap.ui.define([
       var oAppView = this.getOwnerComponent().getModel("appView");
       oAppView.setProperty("/isBusy", true);
       
-      fetch("/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001/Employee")
+      fetch("/sap/opu/odata/sap/ZEMPLOYEE_SRV/EmployeeSet")
         .then(function (res) { return res.json(); })
         .then(function (data) {
-          var aList = Array.isArray(data) ? data : (data && data.value ? data.value : []);
+          var aList = [];
+          if (data && data.d && Array.isArray(data.d.results)) {
+            aList = data.d.results;
+          } else if (Array.isArray(data)) {
+            aList = data;
+          } else if (data && Array.isArray(data.value)) {
+            aList = data.value;
+          }
           oModel.setData(aList);
           oAppView.setProperty("/totalCount", aList.length);
           oAppView.setProperty("/selectedCount", 0);
           oAppView.setProperty("/hasSelection", false);
           oAppView.setProperty("/isBusy", false);
-          MessageToast.show("Employee records refreshed from OData V4 service.");
+          MessageToast.show("Employee records refreshed from SAP Gateway OData V2 service.");
         })
         .catch(function (err) {
           oAppView.setProperty("/isBusy", false);
@@ -267,19 +274,25 @@ sap.ui.define([
       oPayload.Salary = parseFloat(oPayload.Salary) || 0;
       oPayload.StatusCriticality = oPayload.EmploymentStatus === "Active" ? 3 : (oPayload.EmploymentStatus === "On Leave" ? 2 : 1);
 
-      // Execute POST request against OData V4 service
-      fetch("/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001/Employee", {
+      // Execute POST request against SAP Gateway OData V2 service
+      fetch("/sap/opu/odata/sap/ZEMPLOYEE_SRV/EmployeeSet", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(oPayload)
       })
       .then(function (res) {
         if (!res.ok) {
-          throw new Error("HTTP " + res.status + ": Server validation rejected creation.");
+          return res.json().then(function (errBody) {
+            var msg = errBody && errBody.error && errBody.error.message && errBody.error.message.value
+              ? errBody.error.message.value
+              : "Server validation rejected creation.";
+            throw new Error(msg);
+          });
         }
         return res.json();
       })
-      .then(function (createdEmp) {
+      .then(function (data) {
+        var createdEmp = (data && data.d) ? data.d : data;
         // Update local dataset and refresh
         var aList = this.getOwnerComponent().getModel("employeeModel").getData() || [];
         aList.unshift(createdEmp);
@@ -332,7 +345,7 @@ sap.ui.define([
 
     _executeDeletion: function (aEmpIDs) {
       Promise.all(aEmpIDs.map(function (sId) {
-        return fetch("/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001/Employee('" + encodeURIComponent(sId) + "')", {
+        return fetch("/sap/opu/odata/sap/ZEMPLOYEE_SRV/EmployeeSet('" + encodeURIComponent(sId) + "')", {
           method: "DELETE"
         });
       }))

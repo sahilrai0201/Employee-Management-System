@@ -27,50 +27,77 @@ function saveEmployees(data) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), 'utf8');
 }
 
-const SERVICE_BASE = '/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001';
+// Traditional SAP Gateway OData V2 Service Base Endpoint
+const GATEWAY_BASE = '/sap/opu/odata/sap/ZEMPLOYEE_SRV';
 
-// Direct metadata endpoint
-app.get(`${SERVICE_BASE}/\\$metadata`, (req, res) => {
-  res.setHeader('Content-Type', 'application/xml');
-  res.sendFile(METADATA_FILE);
-});
+// Helper to extract Key from OData V2 URI e.g. EmployeeSet('EMP-1001') or EmployeeSet('EMP%2D1001')
+function extractKey(subPath, prefix) {
+  const regex = new RegExp(`^\\/${prefix}\\(['"]?([^'"\\)]+)['"]?\\)`);
+  const match = subPath.match(regex);
+  return match ? decodeURIComponent(match[1]) : null;
+}
 
-// OData V4 Service Middleware
+// -------------------------------------------------------------
+// SAP Gateway OData V2 Middleware
+// -------------------------------------------------------------
 app.use((req, res, next) => {
-  const url = decodeURIComponent(req.originalUrl || req.url);
+  let url = decodeURIComponent(req.originalUrl || req.url);
 
-  if (!url.startsWith(SERVICE_BASE)) {
+  // Fallback redirect if an old RAP URL is called
+  if (url.startsWith('/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001')) {
+    const migrated = url.replace(
+      '/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001',
+      GATEWAY_BASE
+    ).replace('/Employee', '/EmployeeSet')
+     .replace('/Departments', '/DepartmentSet')
+     .replace('/Managers', '/ManagerSet');
+    req.url = migrated;
+    url = decodeURIComponent(req.url);
+  }
+
+  if (!url.startsWith(GATEWAY_BASE)) {
     return next();
   }
 
-  const sub = url.slice(SERVICE_BASE.length).split('?')[0];
+  const sub = url.slice(GATEWAY_BASE.length).split('?')[0];
 
-  // 1. Metadata check
+  // 1. Metadata request
   if (sub === '/$metadata' || sub.includes('$metadata')) {
     res.setHeader('Content-Type', 'application/xml');
     return res.sendFile(METADATA_FILE);
   }
 
-  // 2. Departments
-  if (sub === '/Departments' || sub === '/Departments/') {
+  // 2. Service Document
+  if (sub === '' || sub === '/') {
+    return res.json({
+      d: {
+        EntitySets: ['EmployeeSet', 'DepartmentSet', 'ManagerSet']
+      }
+    });
+  }
+
+  // 3. DepartmentSet (Value Help)
+  if (sub === '/DepartmentSet' || sub === '/DepartmentSet/') {
     const data = JSON.parse(fs.readFileSync(DEPT_FILE, 'utf8'));
     return res.json({
-      '@odata.context': '$metadata#Departments',
-      value: data
+      d: {
+        results: data
+      }
     });
   }
 
-  // 3. Managers
-  if (sub === '/Managers' || sub === '/Managers/') {
+  // 4. ManagerSet (Value Help)
+  if (sub === '/ManagerSet' || sub === '/ManagerSet/') {
     const data = JSON.parse(fs.readFileSync(MGR_FILE, 'utf8'));
     return res.json({
-      '@odata.context': '$metadata#Managers',
-      value: data
+      d: {
+        results: data
+      }
     });
   }
 
-  // 4. Employee Collection
-  if (sub === '/Employee' || sub === '/Employee/') {
+  // 5. EmployeeSet Collection
+  if (sub === '/EmployeeSet' || sub === '/EmployeeSet/') {
     if (req.method === 'GET') {
       let list = getEmployees();
 
@@ -86,9 +113,10 @@ app.use((req, res, next) => {
       }
 
       return res.json({
-        '@odata.context': '$metadata#Employee',
-        '@odata.count': list.length,
-        value: list
+        d: {
+          results: list,
+          __count: list.length
+        }
       });
     }
 
@@ -97,39 +125,45 @@ app.use((req, res, next) => {
       if (!body.EmployeeID || !body.FirstName || !body.LastName || !body.Email) {
         return res.status(400).json({
           error: {
-            code: 'CX_RAP_VALIDATION_ERROR',
-            message: 'Mandatory fields missing: EmployeeID, FirstName, LastName, and Email are required.'
+            code: '/IWBEP/CX_MGW_BUSI_EXCEPTION',
+            message: {
+              lang: 'en',
+              value: 'Mandatory fields missing: Employee ID, Name, and Email are required.'
+            }
           }
         });
       }
 
       const list = getEmployees();
-      const exists = list.some(e => e.EmployeeID.toUpperCase() === body.EmployeeID.trim().toUpperCase());
-      if (exists) {
+      const duplicate = list.find(e => e.EmployeeID.toUpperCase() === body.EmployeeID.toUpperCase());
+      if (duplicate) {
         return res.status(409).json({
           error: {
-            code: 'CX_RAP_DUPLICATE_KEY',
-            message: `Employee ID '${body.EmployeeID}' already exists in the system.`
+            code: '/IWBEP/CX_MGW_BUSI_EXCEPTION',
+            message: {
+              lang: 'en',
+              value: `Employee with ID ${body.EmployeeID} already exists in table ZEMPLOYEE.`
+            }
           }
         });
       }
 
       const newEmp = {
-        EmployeeID: body.EmployeeID.trim().toUpperCase(),
-        FirstName: body.FirstName.trim(),
-        LastName: body.LastName.trim(),
-        FullName: `${body.FirstName.trim()} ${body.LastName.trim()}`,
-        Email: body.Email.trim(),
+        EmployeeID: body.EmployeeID,
+        FirstName: body.FirstName,
+        LastName: body.LastName,
+        FullName: `${body.FirstName} ${body.LastName}`.trim(),
+        Email: body.Email,
         PhoneNumber: body.PhoneNumber || '',
-        DateOfBirth: body.DateOfBirth || '',
+        DateOfBirth: body.DateOfBirth || null,
         Department: body.Department || 'Engineering',
-        JobTitle: body.JobTitle || '',
+        JobTitle: body.JobTitle || 'Specialist',
         Manager: body.Manager || 'Alexander Wright',
         JoiningDate: body.JoiningDate || new Date().toISOString().slice(0, 10),
         EmploymentType: body.EmploymentType || 'Full-Time',
         EmploymentStatus: body.EmploymentStatus || 'Active',
         OfficeLocation: body.OfficeLocation || 'Walldorf, Germany',
-        Salary: parseFloat(body.Salary) || 0,
+        Salary: parseFloat(body.Salary) || 75000,
         Currency: body.Currency || 'EUR',
         StatusCriticality: body.EmploymentStatus === 'Active' ? 3 : (body.EmploymentStatus === 'On Leave' ? 2 : 1)
       };
@@ -137,78 +171,97 @@ app.use((req, res, next) => {
       list.unshift(newEmp);
       saveEmployees(list);
 
-      return res.status(201).json(newEmp);
+      return res.status(201).json({
+        d: newEmp
+      });
     }
   }
 
-  // 5. Individual Employee
-  const singleMatch = sub.match(/^\/Employee(?:\(['"]?([^'"\)]+)['"]?\)|(?:\/['"]?([^'"\)]+)['"]?))$/);
-  if (singleMatch) {
-    const empId = singleMatch[1] || singleMatch[2];
+  // 6. Single Employee: EmployeeSet('ID')
+  const empId = extractKey(sub, 'EmployeeSet');
+  if (empId) {
     const list = getEmployees();
-    const index = list.findIndex(e => e.EmployeeID === empId);
+    const index = list.findIndex(e => e.EmployeeID.toUpperCase() === empId.toUpperCase());
 
     if (req.method === 'GET') {
       if (index === -1) {
         return res.status(404).json({
-          error: { code: 'CX_RAP_NOT_FOUND', message: `Employee '${empId}' not found.` }
+          error: {
+            code: '/IWBEP/CX_MGW_BUSI_EXCEPTION',
+            message: { lang: 'en', value: `Employee '${empId}' not found in database.` }
+          }
         });
       }
       return res.json({
-        '@odata.context': '$metadata#Employee/$entity',
-        ...list[index]
+        d: list[index]
       });
     }
 
-    if (req.method === 'PATCH' || req.method === 'PUT') {
+    if (req.method === 'PUT' || req.method === 'PATCH' || req.method === 'MERGE') {
       if (index === -1) {
         return res.status(404).json({
-          error: { code: 'CX_RAP_NOT_FOUND', message: `Employee '${empId}' not found.` }
+          error: {
+            code: '/IWBEP/CX_MGW_BUSI_EXCEPTION',
+            message: { lang: 'en', value: `Employee '${empId}' not found for update.` }
+          }
         });
       }
-      const existing = list[index];
-      const body = req.body;
+
       const updated = {
-        ...existing,
-        ...body,
-        EmployeeID: existing.EmployeeID,
-        FullName: body.FirstName && body.LastName ? `${body.FirstName.trim()} ${body.LastName.trim()}` : existing.FullName,
-        Salary: body.Salary !== undefined ? parseFloat(body.Salary) : existing.Salary,
-        StatusCriticality: body.EmploymentStatus === 'Active' ? 3 : (body.EmploymentStatus === 'On Leave' ? 2 : 1)
+        ...list[index],
+        ...req.body,
+        EmployeeID: list[index].EmployeeID
       };
+
+      if (updated.FirstName && updated.LastName) {
+        updated.FullName = `${updated.FirstName} ${updated.LastName}`.trim();
+      }
+
+      if (updated.EmploymentStatus) {
+        updated.StatusCriticality = updated.EmploymentStatus === 'Active' ? 3 : (updated.EmploymentStatus === 'On Leave' ? 2 : 1);
+      }
+
       list[index] = updated;
       saveEmployees(list);
-      return res.json(updated);
+
+      return res.json({
+        d: updated
+      });
     }
 
     if (req.method === 'DELETE') {
       if (index === -1) {
         return res.status(404).json({
-          error: { code: 'CX_RAP_NOT_FOUND', message: `Employee '${empId}' not found.` }
+          error: {
+            code: '/IWBEP/CX_MGW_BUSI_EXCEPTION',
+            message: { lang: 'en', value: `Employee '${empId}' not found for deletion.` }
+          }
         });
       }
+
       list.splice(index, 1);
       saveEmployees(list);
+
       return res.status(204).send();
     }
   }
 
-  next();
+  return next();
 });
 
-// Serve webapp static directory
+// Serve SAPUI5 Webapp static assets
 app.use(express.static(path.join(__dirname, 'webapp')));
 
-// Catch-all for SPA navigation
-app.use((req, res) => {
+// Root route redirect to index.html
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'webapp', 'index.html'));
 });
 
+// Start Express HTTP Server
 app.listen(PORT, () => {
-  console.log(`================================================================`);
-  console.log(`SAP Fiori Elements • Employee Management Application`);
-  console.log(`Launchpad URL: http://localhost:${PORT}/index.html`);
-  console.log(`OData V4 Metadata: http://localhost:${PORT}${SERVICE_BASE}/$metadata`);
-  console.log(`OData V4 EntitySet: http://localhost:${PORT}${SERVICE_BASE}/Employee`);
-  console.log(`================================================================`);
+  console.log(`=======================================================`);
+  console.log(`  SAP Fiori - Traditional SAP Gateway OData V2 Server  `);
+  console.log(`  Local Service Endpoint: http://localhost:${PORT}${GATEWAY_BASE}/`);
+  console.log(`  Web Application:        http://localhost:${PORT}/index.html`);
+  console.log(`=======================================================`);
 });

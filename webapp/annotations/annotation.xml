@@ -11,13 +11,13 @@
   <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
     <edmx:Include Namespace="com.sap.vocabularies.UI.v1" Alias="UI"/>
   </edmx:Reference>
-  <edmx:Reference Uri="/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001/$metadata">
-    <edmx:Include Namespace="com.sap.gateway.srvd.zui_employee_o4.v0001"/>
+  <edmx:Reference Uri="/sap/opu/odata/sap/ZEMPLOYEE_SRV/$metadata">
+    <edmx:Include Namespace="ZEMPLOYEE_SRV"/>
   </edmx:Reference>
 
   <edmx:DataServices>
     <Schema xmlns="http://docs.oasis-open.org/odata/ns/edm" Namespace="local">
-      <Annotations Target="com.sap.gateway.srvd.zui_employee_o4.v0001.EmployeeType">
+      <Annotations Target="ZEMPLOYEE_SRV.Employee">
         <!-- Header Info -->
         <Annotation Term="UI.HeaderInfo">
           <Record>

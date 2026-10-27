@@ -16,7 +16,7 @@
           <Title text="{i18n>listReportTitle}" level="H2"/>
         </f:heading>
         <f:expandedContent>
-          <Label text="Human Resources Management • Live OData V4 Directory"/>
+          <Label text="Human Resources Management • SAP Gateway OData V2 Directory"/>
         </f:expandedContent>
         <f:snappedContent>
           <Label text="Employees List Report"/>

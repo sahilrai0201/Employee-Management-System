@@ -1,6 +1,0 @@
-@EndUserText.label: 'Employee Management - OData V4 Service Definition'
-define service ZSD_EMPLOYEE {
-  expose ZC_Employee as Employee;
-  expose ZI_Department as Departments;
-  expose ZI_Manager as Managers;
-}

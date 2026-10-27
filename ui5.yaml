@@ -26,7 +26,7 @@ server:
         backend:
           - path: /sap
             url: http://localhost:8080
-            destination: S4HANA_RAP_LOCAL
+            destination: SAP_GATEWAY_V2_LOCAL
     - name: fiori-tools-appreload
       afterMiddleware: compression
       configuration:

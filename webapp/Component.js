@@ -21,10 +21,10 @@ sap.ui.define([
         selectedCount: 0,
         hasSelection: false,
         isEditMode: false,
-        serviceStatus: "Connected to Local OData V4 Mock Service (RAP Simulation)",
+        serviceStatus: "Connected to SAP NetWeaver Gateway OData V2 (ZEMPLOYEE_SRV)",
         systemInfo: {
           client: "100",
-          system: "S4HANA 2023",
+          system: "ECC 6.0 / NetWeaver 7.50",
           user: "HR_ADMIN",
           role: "HR Administrator"
         }
@@ -45,12 +45,19 @@ sap.ui.define([
       oMgrModel.loadData("localService/data/Managers.json");
       this.setModel(oMgrModel, "managers");
 
-      // Primary employee model (served from our local OData V4 service endpoint)
+      // Primary employee model (served from traditional SAP Gateway OData V2 endpoint)
       var oEmployeeModel = new JSONModel();
-      oEmployeeModel.loadData("/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001/Employee");
+      oEmployeeModel.loadData("/sap/opu/odata/sap/ZEMPLOYEE_SRV/EmployeeSet");
       oEmployeeModel.attachRequestCompleted(function () {
-        var aData = oEmployeeModel.getData();
-        var aList = Array.isArray(aData) ? aData : (aData && aData.value ? aData.value : []);
+        var oData = oEmployeeModel.getData();
+        var aList = [];
+        if (oData && oData.d && Array.isArray(oData.d.results)) {
+          aList = oData.d.results;
+        } else if (Array.isArray(oData)) {
+          aList = oData;
+        } else if (oData && Array.isArray(oData.value)) {
+          aList = oData.value;
+        }
         oEmployeeModel.setData(aList);
         oAppViewModel.setProperty("/totalCount", aList.length);
       });

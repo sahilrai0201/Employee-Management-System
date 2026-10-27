@@ -32,16 +32,17 @@ sap.ui.define([
       if (oEmployee) {
         this._setEmployeeData(oEmployee);
       } else {
-        // Fetch single instance from OData V4 service
-        fetch("/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001/Employee('" + encodeURIComponent(sEmpID) + "')")
+        // Fetch single instance from SAP Gateway OData V2 service
+        fetch("/sap/opu/odata/sap/ZEMPLOYEE_SRV/EmployeeSet('" + encodeURIComponent(sEmpID) + "')")
           .then(function (res) {
             if (!res.ok) {
-              throw new Error("Employee not found in backend.");
+              throw new Error("Employee not found in backend database.");
             }
             return res.json();
           })
           .then(function (data) {
-            this._setEmployeeData(data);
+            var empData = (data && data.d) ? data.d : data;
+            this._setEmployeeData(empData);
           }.bind(this))
           .catch(function (err) {
             MessageBox.error(err.message, {
@@ -99,9 +100,9 @@ sap.ui.define([
       oCurrentData.Salary = parseFloat(oCurrentData.Salary) || 0;
       oCurrentData.StatusCriticality = oCurrentData.EmploymentStatus === "Active" ? 3 : (oCurrentData.EmploymentStatus === "On Leave" ? 2 : 1);
 
-      // Execute PATCH against OData V4 service
-      fetch("/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001/Employee('" + encodeURIComponent(oCurrentData.EmployeeID) + "')", {
-        method: "PATCH",
+      // Execute PUT/PATCH against SAP Gateway OData V2 service
+      fetch("/sap/opu/odata/sap/ZEMPLOYEE_SRV/EmployeeSet('" + encodeURIComponent(oCurrentData.EmployeeID) + "')", {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(oCurrentData)
       })
@@ -111,7 +112,8 @@ sap.ui.define([
         }
         return res.json();
       })
-      .then(function (savedData) {
+      .then(function (data) {
+        var savedData = (data && data.d) ? data.d : data;
         this._oOriginalData = JSON.parse(JSON.stringify(savedData));
         this.getView().getModel("detailModel").setData(JSON.parse(JSON.stringify(savedData)));
         this.getOwnerComponent().getModel("appView").setProperty("/isEditMode", false);
@@ -147,7 +149,7 @@ sap.ui.define([
           emphasizedAction: MessageBox.Action.DELETE,
           onClose: function (sAction) {
             if (sAction === MessageBox.Action.DELETE) {
-              fetch("/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001/Employee('" + encodeURIComponent(oCurrentData.EmployeeID) + "')", {
+              fetch("/sap/opu/odata/sap/ZEMPLOYEE_SRV/EmployeeSet('" + encodeURIComponent(oCurrentData.EmployeeID) + "')", {
                 method: "DELETE"
               })
               .then(function () {

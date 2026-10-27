@@ -1,21 +1,21 @@
-# SAP Fiori Elements - Employee Management System (EMS)
+# SAP Fiori - Employee Management System (EMS)
 
-Enterprise-grade SAP Fiori application built using **SAPUI5**, **SAP Fiori Elements floorplans (List Report and Object Page)**, **OData V4**, and **SAP Horizon theme (`sap_horizon`)**.
+Enterprise-grade SAP Fiori application built using **SAPUI5**, **SAP Fiori Floorplans (List Report and Object Page)**, **Traditional SAP Gateway (SEGW)** with **OData V2**, and **SAP Horizon theme (`sap_horizon`)**.
 
-Designed to consume an **SAP S/4HANA ABAP RESTful Application Programming Model (ABAP RAP)** service (`ZUI_EMPLOYEE_O4`), with an integrated local OData V4 preview server for immediate standalone execution and verification.
+Designed to consume a traditional **SAP NetWeaver Gateway OData V2 Service (`ZEMPLOYEE_SRV`)**, backed by transparent DDIC database table `ZEMPLOYEE` and Data Provider Class `ZCL_EMPLOYEE_DPC_EXT`. Includes an integrated local OData V2 preview server for immediate standalone execution and testing.
 
 ---
 
 ## 1. Application Identity & Architecture
 
-- **Application Name**: Employee Management
+- **Application Name**: Employee Management System
 - **Subtitle**: Human Resources Administration
 - **UI Floorplans**:
   - **List Report Floorplan**: Collapsible DynamicPage header, 7-field filter bar, live search, adapt filters, responsive table with multi-select, semantic status indicators, action toolbar (Create, Edit, Delete, Refresh, Export to Excel), value help dialogs.
-  - **Object Page Floorplan**: Header facets, dynamic metrics, anchor-bar navigation with 4 sections: Personal Information, Employment Details, Compensation, and Office Information. Full edit mode with field validations, save, cancel, and delete.
-- **Protocol**: OData V4
+  - **Object Page Floorplan**: Header facets, dynamic metrics, anchor-bar navigation with 4 sections: Personal Information, Employment Details, Compensation, and Office Information. Full inline edit mode with field validations, save, cancel, and delete.
+- **Protocol**: OData V2
 - **Theme**: SAP Horizon (`sap_horizon`)
-- **Backend Model**: ABAP RAP Managed with Draft, Determinations, and Validations.
+- **Backend Model**: Traditional SAP Gateway (SEGW) Data Provider Class (`ZCL_EMPLOYEE_DPC_EXT`) + ABAP Dictionary Transparent Table (`ZEMPLOYEE`).
 
 ---
 
@@ -23,27 +23,22 @@ Designed to consume an **SAP S/4HANA ABAP RESTful Application Programming Model 
 
 ```
 EMS/
-├── server.js                          # Local OData V4 server with CRUD & metadata
-├── ui5.yaml                           # Official SAP Fiori Tools & UI5 tooling configuration
+├── server.js                          # Local SAP Gateway OData V2 mock & CRUD server
+├── ui5.yaml                           # SAP Fiori Tools & UI5 tooling configuration
 ├── ui5-mock.yaml                      # Mock server configuration for SAP Business Application Studio
 ├── package.json                       # Scripts and project dependencies
-├── abap_rap/                          # Complete SAP ABAP RAP backend source code
-│   ├── ZI_Employee.cds               # Interface CDS View Entity
-│   ├── ZC_Employee.cds               # Consumption CDS View with all @UI annotations
-│   ├── ZI_Employee.bdef              # Managed Behavior Definition with validations & draft
-│   ├── ZC_Employee.bdef              # Projection Behavior Definition
-│   ├── zbp_i_employee.clas.abap      # ABAP Behavior Implementation Class
-│   ├── ZSD_EMPLOYEE.srvd             # Service Definition
-│   └── README_SAP_DEPLOYMENT.md      # Step-by-step S/4HANA & BTP deployment guide
+├── abap_gateway/                      # Traditional SAP NetWeaver ABAP backend source code
+│   ├── ZEMPLOYEE.tabl.abap           # DDIC Transparent Database Table definition
+│   ├── ZCL_EMPLOYEE_DPC_EXT.clas.abap # Data Provider Extension Class (CRUD methods in Open SQL)
+│   ├── ZCL_EMPLOYEE_MPC_EXT.clas.abap # Model Provider Extension Class
+│   └── README_SAP_SEGW_DEPLOYMENT.md # Step-by-step SEGW & /IWFND/MAINT_SERVICE deployment guide
 └── webapp/
     ├── Component.js                  # SAPUI5 Component initializing models & router
-    ├── manifest.json                 # SAP Fiori Elements OData V4 manifest & routing
+    ├── manifest.json                 # SAP Fiori manifest with OData V2 datasource & routing
     ├── index.html                    # SAP Fiori Launchpad container with ShellBar
     ├── init.js                       # SAPUI5 bootstrap module
-    ├── annotations/
-    │   └── annotation.xml            # OData V4 UI Annotations (LineItem, SelectionFields, Facets)
     ├── localService/
-    │   ├── metadata.xml              # OData V4 EDMX Metadata Schema
+    │   ├── metadata.xml              # OData V2 EDMX Metadata Schema
     │   └── data/
     │       ├── Employee.json         # Enterprise employee mock database
     │       ├── Departments.json      # Value help master data
@@ -56,8 +51,8 @@ EMS/
     │   └── ObjectPage.controller.js  # Object Page view/edit/save/delete
     ├── view/
     │   ├── App.view.xml              # Root view with ShellBar & NavContainer
-    │   ├── ListReport.view.xml        # SAP Fiori Elements List Report floorplan
-    │   └── ObjectPage.view.xml       # SAP Fiori Elements Object Page floorplan
+    │   ├── ListReport.view.xml        # SAP Fiori List Report floorplan
+    │   └── ObjectPage.view.xml       # SAP Fiori Object Page floorplan
     ├── fragment/
     │   ├── CreateEmployeeDialog.fragment.xml
     │   ├── DepartmentValueHelpDialog.fragment.xml
@@ -92,17 +87,21 @@ EMS/
 
 ---
 
-## 4. Connecting to a Real SAP S/4HANA or SAP BTP System
+## 4. Connecting to an SAP NetWeaver / ECC / S/4HANA System
 
-1. In `webapp/manifest.json`, verify the data source URI:
+1. In `webapp/manifest.json`, verify the traditional Gateway OData V2 service URI:
    ```json
-   "/sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001/"
+   "/sap/opu/odata/sap/ZEMPLOYEE_SRV/"
    ```
-2. In `ui5.yaml`, point `backend` to your SAP system URL or BTP Destination:
+2. In `ui5.yaml`, point `backend` to your SAP system URL:
    ```yaml
    backend:
      - path: /sap
-       url: https://your-s4hana-host:port
-       destination: S4HANA_SYSTEM
+       url: https://your-sap-server:port
+       destination: SAP_GATEWAY_SYSTEM
    ```
-3. Follow the steps in [abap_rap/README_SAP_DEPLOYMENT.md](file:///c:/Users/sahil/OneDrive/Desktop/EMS/abap_rap/README_SAP_DEPLOYMENT.md) to activate the CDS views and service binding in ADT.
+3. Follow the steps in [abap_gateway/README_SAP_SEGW_DEPLOYMENT.md](file:///c:/Users/sahil/OneDrive/Desktop/EMS/abap_gateway/README_SAP_SEGW_DEPLOYMENT.md) to:
+   - Create table `ZEMPLOYEE` in transaction `SE11`.
+   - Build service `ZEMPLOYEE_SRV` in transaction `SEGW`.
+   - Implement methods in `ZCL_EMPLOYEE_DPC_EXT` in `SE24`.
+   - Register the service in transaction `/IWFND/MAINT_SERVICE`.

@@ -1,15 +1,15 @@
 {
   "name": "corp.ems.employee",
   "version": "1.0.0",
-  "description": "SAP Fiori Elements OData V4 Employee Management Application",
+  "description": "SAP Fiori Employee Management Application consuming Traditional SAP Gateway OData V2",
   "keywords": [
     "ui5",
     "sapui5",
     "fiori",
-    "fiori-elements",
-    "sap-s4hana",
-    "abap-rap",
-    "odata-v4"
+    "sap-gateway",
+    "segw",
+    "abap",
+    "odata-v2"
   ],
   "main": "server.js",
   "scripts": {

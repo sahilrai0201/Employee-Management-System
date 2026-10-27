@@ -46,8 +46,8 @@ sap.ui.define([
                 }),
                 new HBox({
                   items: [
-                    new Label({ text: "OData V4 Binding: ", design: "Bold" }),
-                    new Text({ text: "ZUI_EMPLOYEE_O4" })
+                    new Label({ text: "Gateway Service: ", design: "Bold" }),
+                    new Text({ text: "ZEMPLOYEE_SRV (OData V2)" })
                   ]
                 }),
                 new HBox({
@@ -117,7 +117,7 @@ sap.ui.define([
       var oButton = oEvent.getSource();
       if (!this._oStatusPopover) {
         this._oStatusPopover = new ResponsivePopover({
-          title: "SAP RAP Architecture Status",
+          title: "SAP Gateway Architecture Status",
           placement: "Bottom",
           contentWidth: "350px",
           content: [
@@ -132,14 +132,14 @@ sap.ui.define([
                 }),
                 new Text({
                   class: "sapUiTinyMarginTop",
-                  text: "Protocol: OData V4"
+                  text: "Protocol: OData V2"
                 }),
                 new Text({
-                  text: "Service Path: /sap/opu/odata4/sap/zui_employee_o4/srvd/sap/zsd_employee/0001/"
+                  text: "Service Path: /sap/opu/odata/sap/ZEMPLOYEE_SRV/"
                 }),
                 new Text({
                   class: "sapUiTinyMarginTop",
-                  text: "The application is currently communicating with the local OData V4 engine simulating the ABAP RAP behavior definitions (draft, validations, and determinations)."
+                  text: "The application communicates with the traditional SAP NetWeaver Gateway SEGW service ZEMPLOYEE_SRV backed by table ZEMPLOYEE and Data Provider Class ZCL_EMPLOYEE_DPC_EXT."
                 })
               ]
             })
